@@ -19,12 +19,32 @@ Use the guidelines below to make any necessary modifications.
 - ### Java API documentation is official documentation and must follow.
 - Be sure to fix any maintainability issues that exist.
 - If Java API documentation include throws Exception, it must be handled.
+- Bug exists in line 18 of the ## Input code.
 
 ## Input Code
 ```java
-public class CoreParameters {
-    public static Cid cid(String value) {
-        return new Cid(value);
+public class PasscodeLockScreenActivity extends SherlockFragmentActivity
+        implements KeyboardFragment.OnPasscodeEnteredListener {
+
+    private static final String TAG = "PasscodeLockScreenActivity";
+
+    @Override
+    public void onPasscodeEntered(String pass) {
+        String passcode = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(UxArgument.PASSCODE, "");
+        Log.d(TAG, "Passcode: " + passcode);
+
+        if (passcode.equals(pass)) {
+            GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
+            startActivity(new Intent()
+                    .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
+                    .setAction(getIntent().getAction())
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L))
+            );
+        } else {
+            Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
+        }
     }
 }
 ```
@@ -32,47 +52,46 @@ public class CoreParameters {
 ## Context
 ### Code in repository
 ```
-public class Cid extends LongParam {
-    public Cid(String value) {
-        this(Long.parseLong(value));
-    }
+public final class UxArgument {
+    public static final String PASSCODE = "passcode";
+    public static final String PASSCODE_CLASS_CALLER = "passcode_class_caller";
+    public static final String SELECTED_ACCOUNT_UID = "selected_account_uid";
+}
+
+public class GnuCashApplication extends Application{
+    public static long PASSCODE_SESSION_INIT_TIME = 0l;
 }
 ```
 
 ### Java API documentation
 ```
-parseLong
-public static long parseLong(String s,
-             int radix)
-                      throws NumberFormatException
-Parses the string argument as a signed long in the radix specified by the second argument. The characters in the string must all be digits of the specified radix (as determined by whether Character.digit(char, int) returns a nonnegative value), except that the first character may be an ASCII minus sign '-' ('\u002D') to indicate a negative value or an ASCII plus sign '+' ('\u002B') to indicate a positive value. The resulting long value is returned.
-Note that neither the character L ('\u004C') nor l ('\u006C') is permitted to appear at the end of the string as a type indicator, as would be permitted in Java programming language source code - except that either L or l may appear as a digit for a radix greater than 22.
+getLongExtra
+Added in API level 1
 
-An exception of type NumberFormatException is thrown if any of the following situations occurs:
+public long getLongExtra (String name,
+                long defaultValue)
+Retrieve extended data from the intent.
 
-The first argument is null or is a string of length zero.
-The radix is either smaller than Character.MIN_RADIX or larger than Character.MAX_RADIX.
-Any character of the string is not a digit of the specified radix, except that the first character may be a minus sign '-' ('\u002d') or plus sign '+' ('\u002B') provided that the string is longer than length 1.
-The value represented by the string is not a value of type long.
-Examples:
+Parameters
+name	String: The name of the desired item.
+defaultValue	long: the value to be returned if no value of the desired type is stored with the given name.
+Returns
+long	the value of an item previously added with putExtra(), or the default value if none was found.
 
- parseLong("0", 10) returns 0L
- parseLong("473", 10) returns 473L
- parseLong("+42", 10) returns 42L
- parseLong("-0", 10) returns 0L
- parseLong("-FF", 16) returns -255L
- parseLong("1100110", 2) returns 102L
- parseLong("99", 8) throws a NumberFormatException
- parseLong("Hazelnut", 10) throws a NumberFormatException
- parseLong("Hazelnut", 36) returns 1356099454469L
 
-Parameters:
-s - the String containing the long representation to be parsed.
-radix - the radix to be used while parsing s.
-Returns:
-the long represented by the string argument in the specified radix.
-Throws:
-NumberFormatException - if the string does not contain a parsable long.
+getStringExtra
+Added in API level 1
+
+public String getStringExtra (String name)
+Retrieve extended data from the intent.
+
+Parameters
+name	String: The name of the desired item.
+Returns
+String	the value of an item previously added with putExtra(), or null if no String value was found.
+See also:
+
+putExtra(String, String)
 ```
 
 ## Output Indicator

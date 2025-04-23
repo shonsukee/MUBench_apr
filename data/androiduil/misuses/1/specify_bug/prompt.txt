@@ -15,68 +15,61 @@ Use the guidelines below to make any necessary modifications.
 
 ### Notes.
 - You must follow the ## Context.
-- ### Code in repository cannot be modified, but ## Input Code must follow.
 - ### Java API documentation is official documentation and must follow.
 - Be sure to fix any maintainability issues that exist.
 - If Java API documentation include throws Exception, it must be handled.
-- Bug exists in line 12 of the ## Input code.
+- Bug exists in line 4 to 7 of the ## Input code.
 
 ## Input Code
 ```java
-public class PasscodeLockScreenActivity extends SherlockFragmentActivity
-        implements KeyboardFragment.OnPasscodeEnteredListener {
+public final class StorageUtils {
+	public static File getCacheDirectory(Context context, boolean preferExternal) {
+		File appCacheDir = null;
+		if (preferExternal && MEDIA_MOUNTED
+				.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
+			appCacheDir = getExternalCacheDir(context);
+		}
+		if (appCacheDir == null) {
+			appCacheDir = context.getCacheDir();
+		}
+		if (appCacheDir == null) {
+			String cacheDirPath = "/data/data/" + context.getPackageName() + "/cache/";
+			L.w("Can't define system cache directory! '%s' will be used.", cacheDirPath);
+			appCacheDir = new File(cacheDirPath);
+		}
+		return appCacheDir;
+	}
 
-    private static final String TAG = "PasscodeLockScreenActivity";
+	private static File getExternalCacheDir(Context context) {
+		File dataDir = new File(new File(Environment.getExternalStorageDirectory(), "Android"), "data");
+		File appCacheDir = new File(new File(dataDir, context.getPackageName()), "cache");
+		if (!appCacheDir.exists()) {
+			if (!appCacheDir.mkdirs()) {
+				L.w("Unable to create external cache directory");
+				return null;
+			}
+			try {
+				new File(appCacheDir, ".nomedia").createNewFile();
+			} catch (IOException e) {
+				L.i("Can't create \".nomedia\" file in application external cache directory");
+			}
+		}
+		return appCacheDir;
+	}
 
-    @Override
-    public void onPasscodeEntered(String pass) {
-        String passcode = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                .getString(UxArgument.PASSCODE, "");
-        Log.d(TAG, "Passcode: " + passcode);
-
-        if (passcode.equals(pass)) {
-            GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
-            startActivity(new Intent()
-                    .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
-                    .setAction(getIntent().getAction())
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L))
-            );
-        } else {
-            Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
-        }
-    }
+	private static boolean hasExternalStoragePermission(Context context) {
+		int perm = context.checkCallingOrSelfPermission(EXTERNAL_STORAGE_PERMISSION);
+		return perm == PackageManager.PERMISSION_GRANTED;
+	}
 }
 ```
 
 ## Context
-### Code in repository
-```
-public final class UxArgument {
-    public static final String PASSCODE = "passcode";
-    public static final String PASSCODE_CLASS_CALLER = "passcode_class_caller";
-    public static final String SELECTED_ACCOUNT_UID = "selected_account_uid";
-}
-
-public class GnuCashApplication extends Application{
-    public static long PASSCODE_SESSION_INIT_TIME = 0l;
-}
-```
-
 ### Java API documentation
 ```
-getLongExtra
-Added in API level 1
+Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState) wouldnt cause a NPE while Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) does cause NPE and crashes the application.
 
-public long getLongExtra (String name,
-                long defaultValue)
-Retrieve extended data from the intent.
-
-Parameters
-name	String: The name of the desired item.
-defaultValue	long: the value to be returned if no value of the desired type is stored with the given name.
-Returns
-long	the value of an item previously added with putExtra(), or the default value if none was found.
+I still dont know why getExternalStorageState is null eventhough I have permissions set but the solutions atleast wouldn't crash the application.
 ```
 
 ## Output Indicator

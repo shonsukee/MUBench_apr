@@ -35,15 +35,19 @@ Use the guidelines below to make any necessary modifications.
 ## Context
 ```
 getString
-String getString(int columnIndex)
-          throws SQLException
-Retrieves the value of the designated column in the current row of this ResultSet object as a String in the Java programming language.
-Parameters:
-columnIndex - the first column is 1, the second is 2, ...
-Returns:
-the column value; if the value is SQL NULL, the value returned is null
-Throws:
-SQLException - if the columnIndex is not valid; if a database access error occurs or this method is called on a closed result set
+Added in API level 1
+
+public String getString (int index)
+Retrieves the string value for the attribute at index.
+
+If the attribute is not a string, this method will attempt to coerce it to a string.
+
+Parameters
+index	int: Index of attribute to retrieve.
+Returns
+String	String holding string data. Any styling information is removed. Returns null if the attribute is not defined or could not be coerced to a string.
+Throws
+RuntimeException	if the TypedArray has already been recycled.
 ```
 
 ## Output Indicator

@@ -15,62 +15,49 @@ Use the guidelines below to make any necessary modifications.
 
 ### Notes.
 - You must follow the ## Context.
-- ### Code in repository cannot be modified, but ## Input Code must follow.
 - ### Java API documentation is official documentation and must follow.
 - Be sure to fix any maintainability issues that exist.
 - If Java API documentation include throws Exception, it must be handled.
+- Bug exists in line 12 to 19 of the ## Input code.
 
 ## Input Code
 ```java
-public class CoreParameters {
-    public static Cid cid(String value) {
-        return new Cid(value);
+public class RtcpReceivedEvent extends AbstractRtcpEvent
+{
+    public void setPt(String ptString)
+    {
+        // Format is "PT: %d(%s)"
+        if (ptString == null || ptString.length() == 0)
+        {
+            this.pt = null;
+            return;
+        }
+
+        if (ptString.indexOf('(') > 0)
+        {
+            this.pt = Long.parseLong(ptString.substring(0, ptString.indexOf('(')));
+        }
+        else
+        {
+            this.pt = Long.parseLong(ptString);
+        }
     }
 }
 ```
 
 ## Context
-### Code in repository
-```
-public class Cid extends LongParam {
-    public Cid(String value) {
-        this(Long.parseLong(value));
-    }
-}
-```
-
 ### Java API documentation
 ```
 parseLong
-public static long parseLong(String s,
-             int radix)
+public static long parseLong(String s)
                       throws NumberFormatException
-Parses the string argument as a signed long in the radix specified by the second argument. The characters in the string must all be digits of the specified radix (as determined by whether Character.digit(char, int) returns a nonnegative value), except that the first character may be an ASCII minus sign '-' ('\u002D') to indicate a negative value or an ASCII plus sign '+' ('\u002B') to indicate a positive value. The resulting long value is returned.
-Note that neither the character L ('\u004C') nor l ('\u006C') is permitted to appear at the end of the string as a type indicator, as would be permitted in Java programming language source code - except that either L or l may appear as a digit for a radix greater than 22.
-
-An exception of type NumberFormatException is thrown if any of the following situations occurs:
-
-The first argument is null or is a string of length zero.
-The radix is either smaller than Character.MIN_RADIX or larger than Character.MAX_RADIX.
-Any character of the string is not a digit of the specified radix, except that the first character may be a minus sign '-' ('\u002d') or plus sign '+' ('\u002B') provided that the string is longer than length 1.
-The value represented by the string is not a value of type long.
-Examples:
-
- parseLong("0", 10) returns 0L
- parseLong("473", 10) returns 473L
- parseLong("+42", 10) returns 42L
- parseLong("-0", 10) returns 0L
- parseLong("-FF", 16) returns -255L
- parseLong("1100110", 2) returns 102L
- parseLong("99", 8) throws a NumberFormatException
- parseLong("Hazelnut", 10) throws a NumberFormatException
- parseLong("Hazelnut", 36) returns 1356099454469L
+Parses the string argument as a signed decimal long. The characters in the string must all be decimal digits, except that the first character may be an ASCII minus sign '-' (\u002D') to indicate a negative value or an ASCII plus sign '+' ('\u002B') to indicate a positive value. The resulting long value is returned, exactly as if the argument and the radix 10 were given as arguments to the parseLong(java.lang.String, int) method.
+Note that neither the character L ('\u004C') nor l ('\u006C') is permitted to appear at the end of the string as a type indicator, as would be permitted in Java programming language source code.
 
 Parameters:
-s - the String containing the long representation to be parsed.
-radix - the radix to be used while parsing s.
+s - a String containing the long representation to be parsed
 Returns:
-the long represented by the string argument in the specified radix.
+the long represented by the argument in decimal.
 Throws:
 NumberFormatException - if the string does not contain a parsable long.
 ```

@@ -1,4 +1,4 @@
-public class PasscodeLockScreenActivity extends androidx.appcompat.app.AppCompatActivity
+public class PasscodeLockScreenActivity extends AppCompatActivity
         implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private static final String TAG = "PasscodeLockScreenActivity";
@@ -11,13 +11,19 @@ public class PasscodeLockScreenActivity extends androidx.appcompat.app.AppCompat
 
         if (passcode.equals(pass)) {
             GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
+
             Intent callerIntent = getIntent();
-            Intent newIntent = new Intent()
-                    .setClassName(this, callerIntent.getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
-                    .setAction(callerIntent.getAction())
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, callerIntent.getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L));
-            startActivity(newIntent);
+            String callerClass = callerIntent.getStringExtra(UxArgument.PASSCODE_CLASS_CALLER);
+            String action = callerIntent.getAction();
+            long selectedAccountUid = callerIntent.getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L);
+
+            Intent intent = new Intent();
+            intent.setClassName(this, callerClass);
+            intent.setAction(action);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, selectedAccountUid);
+
+            startActivity(intent);
         } else {
             Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
         }
