@@ -72,8 +72,128 @@ Use the guidelines below to make any necessary modifications.
 ```
 
 ## Context
+### Java API documentation
 ```
+String
+@Deprecated
+public String(byte[] ascii,
+                          int hibyte,
+                          int offset,
+                          int count)
+非推奨。このメソッドでは、バイトから文字への変換が正しく行われません。JDK 1.1以降では、これを行うには、Charset (文字セットの名前)を取る、またはプラットフォームのデフォルト文字セットを使用するStringコンストラクタの使用が推奨されます。
+8ビット整数値配列の部分配列によって構築される新しいStringを割り当てます。
+引数offsetは部分配列の先頭のバイトのインデックスであり、引数countは部分配列の長さを指定します。
 
+部分配列の各byteは上記メソッドに指定されるcharに変換されます。
+
+パラメータ:
+ascii - 文字列に変換されるバイト
+hibyte - 16ビットの各Unicodeコード単位の上位8ビット
+offset - 初期オフセット
+count - 長さ
+例外:
+IndexOutOfBoundsException - offsetまたはcount引数が無効な場合
+関連項目:
+String(byte[], int), String(byte[], int, int, java.lang.String), String(byte[], int, int, java.nio.charset.Charset), String(byte[], int, int), String(byte[], java.lang.String), String(byte[], java.nio.charset.Charset), String(byte[])
+String
+@Deprecated
+public String(byte[] ascii,
+                          int hibyte)
+非推奨。このメソッドでは、バイトから文字への変換が正しく行われません。JDK 1.1以降では、これを行うには、Charset (文字セットの名前)を取る、またはプラットフォームのデフォルト文字セットを使用するStringコンストラクタの使用が推奨されます。
+8ビット整数値の配列からなる文字を持つ新しいStringを割り当てます。作成される文字列の各文字データcは、バイト配列の対応するコンポーネントbから、次のようになります。
+     c == (char)(((hibyte & 0xff) << 8)
+                         | (b & 0xff))
+ 
+パラメータ:
+ascii - 文字列に変換されるバイト
+hibyte - 16ビットの各Unicodeコード単位の上位8ビット
+関連項目:
+String(byte[], int, int, java.lang.String), String(byte[], int, int, java.nio.charset.Charset), String(byte[], int, int), String(byte[], java.lang.String), String(byte[], java.nio.charset.Charset), String(byte[])
+String
+public String(byte[] bytes,
+              int offset,
+              int length,
+              String charsetName)
+       throws UnsupportedEncodingException
+指定された文字セットを使用して、指定されたバイト部分配列をデコードすることによって、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、部分配列長と一致しないことがあります。
+指定された文字セットで指定されたバイトが無効な場合、このコンストラクタの動作は指定されません。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+offset - 復号化される先頭バイトのインデックス
+length - 復号化するバイト数
+charsetName - サポートされているcharsetの名前
+例外:
+UnsupportedEncodingException - 指定された文字セットがサポートされていない場合
+IndexOutOfBoundsException - offset引数とlength引数が、bytes配列の境界の外側の文字を指す場合
+導入されたバージョン:
+JDK1.1
+String
+public String(byte[] bytes,
+              int offset,
+              int length,
+              Charset charset)
+指定された文字セットを使用して、指定された部分バイト配列を復号化することにより、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、部分配列長と一致しないことがあります。
+このメソッドは、不正入力シーケンスやマップ不可文字シーケンスを、この文字セットのデフォルトの置換文字列で置き換えます。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+offset - 復号化される先頭バイトのインデックス
+length - 復号化するバイト数
+charset - bytesの復号化に使用される文字セット
+例外:
+IndexOutOfBoundsException - offset引数とlength引数が、bytes配列の境界の外側の文字を指す場合
+導入されたバージョン:
+1.6
+String
+public String(byte[] bytes,
+              String charsetName)
+       throws UnsupportedEncodingException
+指定された文字セットを使用して、指定されたバイト配列を復号化することにより、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、バイト配列長と一致しないことがあります。
+指定された文字セットで指定されたバイトが無効な場合、このコンストラクタの動作は指定されません。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+charsetName - サポートされているcharsetの名前
+例外:
+UnsupportedEncodingException - 指定された文字セットがサポートされていない場合
+導入されたバージョン:
+JDK1.1
+String
+public String(byte[] bytes,
+              Charset charset)
+指定された文字セットを使用して、指定されたバイト配列を復号化することにより、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、バイト配列長と一致しないことがあります。
+このメソッドは、不正入力シーケンスやマップ不可文字シーケンスを、この文字セットのデフォルトの置換文字列で置き換えます。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+charset - bytesの復号化に使用される文字セット
+導入されたバージョン:
+1.6
+String
+public String(byte[] bytes,
+              int offset,
+              int length)
+プラットフォームのデフォルトの文字セットを使用して、指定されたバイト部分配列を復号化することによって、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、部分配列長と一致しないことがあります。
+指定されたバイトがデフォルトの文字セットで無効な場合、このコンストラクタの動作は指定されません。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+offset - 復号化される先頭バイトのインデックス
+length - 復号化するバイト数
+例外:
+IndexOutOfBoundsException - offset引数とlength引数が、bytes配列の境界の外側の文字を指す場合
+導入されたバージョン:
+JDK1.1
+String
+public String(byte[] bytes)
+プラットフォームのデフォルトの文字セットを使用して、指定されたバイト配列を復号化することによって、新しいStringを構築します。新しいStringの長さは文字セットによって変化するため、バイト配列長と一致しないことがあります。
+指定されたバイトがデフォルトの文字セットで無効な場合、このコンストラクタの動作は指定されません。デコード処理をより強力に制御する必要がある場合、CharsetDecoderクラスを使用する必要があります。
+
+パラメータ:
+bytes - 文字列に復号化されるバイト
+導入されたバージョン:
+JDK1.1
 ```
 
 ## Output Indicator
