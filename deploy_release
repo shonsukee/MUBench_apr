@@ -1,3 +1,0 @@
-#!/bin/bash
-
-./deploy svamann/mubench stable

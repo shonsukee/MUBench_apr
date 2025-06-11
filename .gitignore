@@ -177,3 +177,5 @@ mubench.reviewsite/*.sqlite
 
 # strange log file that keeps being created by some detector…
 log.txt
+
+.DS_Store

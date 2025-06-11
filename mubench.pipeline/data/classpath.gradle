@@ -1,7 +1,0 @@
-apply from: 'build.gradle'
-
-task printClasspath {
-	doLast {
-		configurations.runtime.each { println it }
-	}
-}
