@@ -1,0 +1,4 @@
+PyYaml==5.4
+requests
+psutil
+hurry.filesize
